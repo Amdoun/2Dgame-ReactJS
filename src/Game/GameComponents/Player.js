@@ -7,6 +7,7 @@ export default class Player {
         this.gravity = 0.5;
         this.jumpspeed = 20;
         this.verticalspeed = 0;
+        this.previousState = { left: 0, right: 0, space: 0, enter: 0 };
     }
 
     update(keys){
@@ -18,11 +19,12 @@ export default class Player {
         }
         if ( this.verticalspeed < 20) this.verticalspeed+= this.gravity;
         this.position.y += this.verticalspeed;
-        if (keys.space){
+        if (keys.space && !this.previousState.space){
             this.verticalspeed = 0;
-            this.position.y -= this.jumpspeed
+            this.verticalspeed -= this.jumpspeed
         }
         if ( this.position.y > window.innerHeight) this.position.y = window.innerHeight;
+        this.previousState = {...keys};
     }
 
     render(state){
