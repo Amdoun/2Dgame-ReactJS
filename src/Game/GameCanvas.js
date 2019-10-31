@@ -72,7 +72,6 @@ class GameCanvas extends Component {
                 width={ this.state.screen.width * this.state.screen.ratio }
                 height={ this.state.screen.height * this.state.screen.ratio }
             >
-
             </canvas>
         )
     }

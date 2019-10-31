@@ -4,17 +4,25 @@ export default class Player {
         this.position = args.position;
         this.speed = args.speed;
         this.radius = args.radius;
+        this.gravity = 0.5;
+        this.jumpspeed = 20;
+        this.verticalspeed = 0;
     }
 
     update(keys){
-        if (keys.right){
+        if (keys.right && this.position.x <= 800){
             this.position.x += this.speed
         } else
-        if (keys.left){
+        if (keys.left && this.position.x >= 0){
             this.position.x -= this.speed
         }
-
-        
+        if ( this.verticalspeed < 20) this.verticalspeed+= this.gravity;
+        this.position.y += this.verticalspeed;
+        if (keys.space){
+            this.verticalspeed = 0;
+            this.position.y -= this.jumpspeed
+        }
+        if ( this.position.y > window.innerHeight) this.position.y = window.innerHeight;
     }
 
     render(state){
@@ -27,8 +35,8 @@ export default class Player {
         context.beginPath();
         context.moveTo(0, -25);
         context.lineTo(15, 15);
-        context.lineTo(5, 7);
-        context.lineTo(-5, 7);
+        context.lineTo(5, 15);
+        context.lineTo(-5, 15);
         context.lineTo(-15, 15);
         context.closePath();
         context.fill();
