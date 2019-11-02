@@ -1,2 +1,2 @@
 ReactJS Test project.
-[![Build Status](https://travis-ci.com/Amdoun/2Dgame-ReactJS)](https://travis-ci.com/Amdoun/2Dgame-ReactJS)
+[![Build Status](https://api.travis-ci.org/Amdoun/2Dgame-ReactJS.svg)](https://travis-ci.com/Amdoun/2Dgame-ReactJS)
