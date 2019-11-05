@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import InputManager from './InputManager';
 import './gameCanvas.css'
 import Player from './GameComponents/Player';
+import socketIOClient from "socket.io-client";
+import { environment as env } from "../environments/environment"
+import NetPlayer from './GameComponents/NetPlayer';
 
 const width = 800;
 const height = window.innerHeight;
@@ -20,7 +23,9 @@ class GameCanvas extends Component {
             },
             context: null,
         }
+        this.socket = null
         this.player = null
+        this.netPlayers = []
     }
 
     componentDidMount() {
@@ -28,7 +33,26 @@ class GameCanvas extends Component {
         const context = this.refs.canvas.getContext('2d');
         this.setState({ context: context });
         this.startGame()
+        this.socket = socketIOClient(env.ServerUrl);
+        this.socket.on("players", data => {
+            this.handleNetPlayers(data)
+        })
         requestAnimationFrame(() => {this.update()})
+    }
+
+    handleNetPlayers(data){
+        let netPlayers = data.filter( element => element.id != this.socket.id)
+        netPlayers.forEach( element => {
+            // If player not in this.netPlayers
+            if (this.netPlayers.filter( el => el.id == element.id).length == 0){
+                //Add new player
+                let netPlayer = new NetPlayer({id: element.id, position: element.position})
+                this.netPlayers.push(netPlayer)
+            } else {
+                //Update existing player position
+                this.netPlayers.filter( el => el.id == element.id)[0].update(element.position)
+            }
+        })
     }
        
     componentWillUnmount() {
@@ -41,7 +65,9 @@ class GameCanvas extends Component {
         this.clearBackground();
         if (this.player !== undefined && this.player !== null) {
             this.player.update(keys);
-            this.player.render(this.state);       
+            this.player.render(this.state);
+            this.netPlayers.forEach( element => element.render(this.state))
+            this.socket.emit("position", this.player.position)
         }
 
         requestAnimationFrame(() => {this.update()})
