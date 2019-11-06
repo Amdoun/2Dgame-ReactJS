@@ -41,16 +41,26 @@ class GameCanvas extends Component {
     }
 
     handleNetPlayers(data){
-        let netPlayers = data.filter( element => element.id != this.socket.id)
-        netPlayers.forEach( element => {
+        let netPlayersData = data.filter( element => element.id !== this.socket.id)
+        //Check if player disconnected
+        if (this.netPlayers.length > netPlayersData.length){
+            let newNetplayers = []
+            this.netPlayers.forEach( element => {
+                if (netPlayersData.filter( el => el.id === element.id).length > 0){
+                    newNetplayers.push(element)
+                }
+            })
+            this.netPlayers = newNetplayers;
+        }
+        netPlayersData.forEach( element => {
             // If player not in this.netPlayers
-            if (this.netPlayers.filter( el => el.id == element.id).length == 0){
+            if (this.netPlayers.filter( el => el.id === element.id).length === 0){
                 //Add new player
                 let netPlayer = new NetPlayer({id: element.id, position: element.position})
                 this.netPlayers.push(netPlayer)
             } else {
                 //Update existing player position
-                this.netPlayers.filter( el => el.id == element.id)[0].update(element.position)
+                this.netPlayers.filter( el => el.id === element.id)[0].update(element.position)
             }
         })
     }
