@@ -23,7 +23,7 @@ export default class Player {
             this.verticalspeed = 0;
             this.verticalspeed -= this.jumpspeed
         }
-        if ( this.position.y > window.innerHeight) this.position.y = window.innerHeight;
+        if ( this.position.y > 400) this.position.y = 400;
         this.previousState = {...keys};
     }
 

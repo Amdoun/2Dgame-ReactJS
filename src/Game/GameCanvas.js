@@ -5,9 +5,12 @@ import Player from './GameComponents/Player';
 import socketIOClient from "socket.io-client";
 import { environment as env } from "../environments/environment"
 import NetPlayer from './GameComponents/NetPlayer';
+import MainMenu from './GameComponents/MainMenu';
+import MouseManager from './MouseManager';
+import ConnectionManager from './ConnectionManager';
 
 const width = 800;
-const height = window.innerHeight;
+const height = 400; //const height = window.innerHeight;
 const ratio = window.devicePixelRatio || 1;
 
 class GameCanvas extends Component {
@@ -16,6 +19,7 @@ class GameCanvas extends Component {
         super(props)
         this.state = {
             input: new InputManager(),
+            mouse: new MouseManager(),
             screen: {
                 width: width,
                 height: height,
@@ -23,63 +27,43 @@ class GameCanvas extends Component {
             },
             context: null,
         }
-        this.socket = null
+        this.connectionManager = null
+        this.mainMenu = null
         this.player = null
-        this.netPlayers = []
     }
 
     componentDidMount() {
         this.state.input.bindKeys(); 
+        this.state.mouse.bindMouse(this.refs.canvas);
         const context = this.refs.canvas.getContext('2d');
         this.setState({ context: context });
         this.startGame()
-        this.socket = socketIOClient(env.ServerUrl);
-        this.socket.on("players", data => {
-            this.handleNetPlayers(data)
-        })
         requestAnimationFrame(() => {this.update()})
-    }
-
-    handleNetPlayers(data){
-        let netPlayersData = data.filter( element => element.id !== this.socket.id)
-        //Check if player disconnected
-        if (this.netPlayers.length > netPlayersData.length){
-            let newNetplayers = []
-            this.netPlayers.forEach( element => {
-                if (netPlayersData.filter( el => el.id === element.id).length > 0){
-                    newNetplayers.push(element)
-                }
-            })
-            this.netPlayers = newNetplayers;
-        }
-        netPlayersData.forEach( element => {
-            // If player not in this.netPlayers
-            if (this.netPlayers.filter( el => el.id === element.id).length === 0){
-                //Add new player
-                let netPlayer = new NetPlayer({id: element.id, position: element.position})
-                this.netPlayers.push(netPlayer)
-            } else {
-                //Update existing player position
-                this.netPlayers.filter( el => el.id === element.id)[0].update(element.position)
-            }
-        })
     }
        
     componentWillUnmount() {
         this.state.input.unbindKeys();
+        this.state.mouse.unBindMouse();
     }
 
     update(currentDelta){
         const keys = this.state.input.pressedKeys
-
+        const mousePos = this.state.mouse.mousePosition
         this.clearBackground();
+        if (this.mainMenu !== undefined && this.mainMenu !== null){
+            this.mainMenu.update(mousePos)
+            this.mainMenu.render(this.state)
+            if (this.connectionManager !== undefined && this.connectionManager !== null) {
+                this.mainMenu.setDisplayText(this.connectionManager.connectionStatus);
+            }
+        }
         if (this.player !== undefined && this.player !== null) {
             this.player.update(keys);
             this.player.render(this.state);
-            this.netPlayers.forEach( element => element.render(this.state))
-            this.socket.emit("position", this.player.position)
         }
-
+        if (this.connectionManager !== undefined && this.connectionManager !== null) {
+            this.connectionManager.update(this.state,this.player);
+        }
         requestAnimationFrame(() => {this.update()})
     }
 
@@ -92,6 +76,8 @@ class GameCanvas extends Component {
     }
 
     startGame() {
+        let mainMenu = new MainMenu()
+        let connectionManager = new ConnectionManager()
         let player = new Player({
             radius: 15,
             speed: 2.5,
@@ -100,6 +86,9 @@ class GameCanvas extends Component {
                 y: this.state.screen.height - 50
             }});
         this.player = player;
+        this.mainMenu = mainMenu;
+        this.connectionManager = connectionManager;
+        this.connectionManager.initConnection();
      }
 
     render(){
