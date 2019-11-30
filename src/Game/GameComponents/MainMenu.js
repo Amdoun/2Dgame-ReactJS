@@ -42,7 +42,7 @@ export default class MainMenu {
         context.strokeStyle = "white";
         context.rect(340,175,120,50);
         if (this.connectButtonHovered){
-            context.fillStyle = "red";
+            context.fillStyle = "gray";
             context.fill();
         }
         context.fillStyle = "white";
