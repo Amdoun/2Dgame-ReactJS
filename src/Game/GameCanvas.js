@@ -76,7 +76,7 @@ class GameCanvas extends Component {
     }
 
     startGame() {
-        let mainMenu = new MainMenu()
+        let mainMenu = new MainMenu(this)
         let connectionManager = new ConnectionManager()
         let player = new Player({
             radius: 15,

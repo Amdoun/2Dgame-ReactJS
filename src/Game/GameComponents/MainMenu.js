@@ -1,7 +1,8 @@
 export default class MainMenu {
 
-    constructor(){
-        this.displayText = "Connecting..."
+    constructor(gameCanvas){
+        this.gameCanvas = gameCanvas;
+        this.displayText = "Connecting...";
         this.connectButtonHovered = false;
         this.buttonAttributes = { width: 120, height: 50, posX: 340, posY: 175}
         this.bindMouseClickEvent();
@@ -13,7 +14,7 @@ export default class MainMenu {
 
     handleMenuClick(){
         if (this.connectButtonHovered){
-            //works
+            this.gameCanvas.connectionManager.connect();
         }
     }
 
