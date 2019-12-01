@@ -1,3 +1,5 @@
+import { environment as env } from "../../environments/environment"
+
 export default class MainMenu {
 
     constructor(gameCanvas){
@@ -41,14 +43,17 @@ export default class MainMenu {
         context.beginPath();
         context.lineWidth = "3";
         context.strokeStyle = "white";
-        context.rect(340,175,120,50);
-        if (this.connectButtonHovered){
-            context.fillStyle = "gray";
-            context.fill();
-        }
         context.fillStyle = "white";
-        context.fillText("Connect",360,205);
-        context.stroke();
+        if (this.gameCanvas.connectionManager.connectionStatus === env.disconnectedStatus){
+            context.rect(340,175,120,50);
+            if (this.connectButtonHovered){
+                context.fillStyle = "gray";
+                context.fill();
+            }
+            context.fillStyle = "white";
+            context.fillText("Connect",360,205);
+            context.stroke();
+        }
         context.fillText(this.displayText,0,15);
         context.restore();
     }

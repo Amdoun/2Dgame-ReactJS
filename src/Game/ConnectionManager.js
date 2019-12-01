@@ -45,6 +45,11 @@ export default class ConnectionManager {
 
     connect(){
         this.socket.connect()
+        this.connectionStatus = env.connectingStatus;
+        this.timeout = setTimeout(() => {
+            this.socket.disconnect()
+            this.connectionStatus = env.disconnectedStatus;
+        }, 10000)
     }
 
     initConnection(){
