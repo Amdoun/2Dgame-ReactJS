@@ -1,0 +1,18 @@
+.menu-main {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background-color: white;
+    left: calc(50% - 75px);
+    top: 100px;
+    text-align: center;
+}
+
+.menu-button {
+    padding: 5px;
+}
+
+.menu-textinput {
+    margin: 5px;
+    width: 100px;
+}

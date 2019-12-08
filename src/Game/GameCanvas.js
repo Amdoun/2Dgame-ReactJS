@@ -11,7 +11,7 @@ import ConnectionManager from './ConnectionManager';
 
 const width = 800;
 const height = 400; //const height = window.innerHeight;
-const ratio = window.devicePixelRatio || 1;
+const ratio = 1;
 
 class GameCanvas extends Component {
 

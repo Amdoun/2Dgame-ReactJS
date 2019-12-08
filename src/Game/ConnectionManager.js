@@ -11,6 +11,7 @@ export default class ConnectionManager {
         this.connectionStatus = env.connectingStatus
     }
 
+    //Handle netPlayers after receiving socket update
     handleNetPlayers(data){
         let netPlayersData = data.filter( element => element.id !== this.socket.id)
         //Check if player disconnected
@@ -36,6 +37,7 @@ export default class ConnectionManager {
         })
     }
     
+    //Every frame
     update(state,player){
         this.netPlayers.forEach( element => element.render(state))
         if (this.connectionStatus === env.connectedStatus){
@@ -43,21 +45,25 @@ export default class ConnectionManager {
         }
     }
 
+    //Attempt connection
     connect(){
         this.socket.connect()
         this.connectionStatus = env.connectingStatus;
-        this.timeout = setTimeout(() => {
-            this.socket.disconnect()
-            this.connectionStatus = env.disconnectedStatus;
-        }, 10000)
+        this.triggerTimeout();
     }
 
+    triggerTimeout(){
+        this.timeout = setTimeout(() => {
+            this.socket.disconnect();
+            this.connectionStatus = env.disconnectedStatus;
+            this.netPlayers = [];
+        }, 10000);
+    }
+
+    //On creation
     initConnection(){
         this.socket = socketIOClient(env.ServerUrl);
-        this.timeout = setTimeout(() => {
-            this.socket.disconnect()
-            this.connectionStatus = env.disconnectedStatus;
-        }, 10000)
+        this.triggerTimeout();
         this.socket.on("players", data => {
             this.handleNetPlayers(data);
         })
@@ -67,10 +73,7 @@ export default class ConnectionManager {
         })
         this.socket.on("disconnect",() => {
             this.connectionStatus = env.connectingStatus;
-            this.timeout = setTimeout(() => {
-                this.socket.disconnect()
-                this.connectionStatus = env.disconnectedStatus;
-            }, 10000)
+            this.triggerTimeout();
         })
     }
 }
