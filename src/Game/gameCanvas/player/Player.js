@@ -1,4 +1,4 @@
-import image from '../../assets/idle.png'
+import image from './assets/idle.png'
 
 export default class Player {
 
@@ -35,7 +35,7 @@ export default class Player {
         this.previousState = {...keys};
     }
 
-    render(state){
+    render(state,name){
         const context = state.context;
         context.save();
         context.translate(this.position.x, this.position.y);
@@ -44,11 +44,11 @@ export default class Player {
         context.lineWidth = "3";
         context.strokeStyle = "white";
         context.fillStyle = "red";
-        context.fillText("test",-17, -30);
+        context.fillText(name,-17, -45);
         context.strokeStyle = '#ffffff';
         context.fillStyle = '#ffffff';
         context.lineWidth = 2;
-        context.drawImage(this.sprite,0,-53);
+        context.drawImage(this.sprite,0,-43);
         context.fill();
         context.stroke();
         context.restore();

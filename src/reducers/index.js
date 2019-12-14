@@ -1,9 +1,8 @@
-const initialState = {
-    displayName: ''
-};
+import { combineReducers } from 'redux';
+import connectionReducer from '../Game/gameCanvas/managers/connectionManager/connectionSlice';
+import nameReducer from '../Game/menu/nameSlice';
 
-function rootReducer(state = initialState, action) {
-    return state;
-};
-
-export default rootReducer;
+export default combineReducers({
+  connection: connectionReducer,
+  name: nameReducer
+})

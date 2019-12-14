@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
-import InputManager from './InputManager';
+import { connect } from 'react-redux';
 import './gameCanvas.css'
-import Player from './GameComponents/Player';
-import socketIOClient from "socket.io-client";
-import { environment as env } from "../environments/environment"
-import NetPlayer from './GameComponents/NetPlayer';
-import MainMenu from './GameComponents/MainMenu';
-import MouseManager from './MouseManager';
-import ConnectionManager from './ConnectionManager';
+import Player from './player';
+import MainMenu from './MainMenu';
+import InputManager from './managers/inputManager';
+import MouseManager from './managers/mouseManager';
+import ConnectionManager from './managers/connectionManager';
 
 const width = 800;
 const height = 400; //const height = window.innerHeight;
@@ -27,7 +25,7 @@ class GameCanvas extends Component {
             },
             context: null,
         }
-        this.connectionManager = null
+        this.connectionManager = React.createRef();
         this.mainMenu = null
         this.player = null
     }
@@ -53,16 +51,16 @@ class GameCanvas extends Component {
         if (this.mainMenu !== undefined && this.mainMenu !== null){
             this.mainMenu.update(mousePos)
             this.mainMenu.render(this.state)
-            if (this.connectionManager !== undefined && this.connectionManager !== null) {
-                this.mainMenu.setDisplayText(this.connectionManager.connectionStatus);
+            if (this.connectionManager.current !== undefined && this.connectionManager.current !== null) {
+                this.mainMenu.setDisplayText(this.connectionManager.current.connectionStatus);
             }
         }
         if (this.player !== undefined && this.player !== null) {
             this.player.update(keys);
-            this.player.render(this.state);
+            this.player.render(this.state,this.props.name);
         }
-        if (this.connectionManager !== undefined && this.connectionManager !== null) {
-            this.connectionManager.update(this.state,this.player);
+        if (this.connectionManager.current !== undefined && this.connectionManager.current !== null) {
+            this.connectionManager.current.update(this.state,this.player);
         }
         requestAnimationFrame(() => {this.update()})
     }
@@ -77,7 +75,6 @@ class GameCanvas extends Component {
 
     startGame() {
         let mainMenu = new MainMenu(this)
-        let connectionManager = new ConnectionManager()
         let player = new Player({
             radius: 15,
             speed: 2.5,
@@ -87,19 +84,25 @@ class GameCanvas extends Component {
             }});
         this.player = player;
         this.mainMenu = mainMenu;
-        this.connectionManager = connectionManager;
-        this.connectionManager.initConnection();
+        this.connectionManager.current.initConnection();
      }
 
     render(){
         return(
-            <canvas ref="canvas" className="canvas-main"
-                width={ this.state.screen.width * this.state.screen.ratio }
-                height={ this.state.screen.height * this.state.screen.ratio }
-            >
-            </canvas>
+            <div>
+                <ConnectionManager ref={this.connectionManager}/>
+                <canvas ref="canvas" className="canvas-main"
+                    width={ this.state.screen.width * this.state.screen.ratio }
+                    height={ this.state.screen.height * this.state.screen.ratio }
+                    >
+                </canvas>
+            </div>
         )
     }
 }
 
-export default GameCanvas;
+const mapStateToProps = state => ({
+    name: state.name
+})
+
+export default connect(mapStateToProps, null)(GameCanvas);

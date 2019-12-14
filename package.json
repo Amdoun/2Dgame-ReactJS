@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@reduxjs/toolkit": "^1.1.0",
     "jest": "^24.9.0",
     "jsdom": "^15.2.0",
     "lodash.template": "^4.5.0",

@@ -1,14 +1,37 @@
+import { Component } from 'react';
+import { connect } from 'react-redux';
 import socketIOClient from "socket.io-client";
-import { environment as env } from "../environments/environment"
-import NetPlayer from './GameComponents/NetPlayer';
+import { setConnectStatus } from './connectionSlice'
+import { connectionStatus as conStat, triggerStatus as trigStat } from "./connectionConsts";
+import { serverUrl as servUrl } from './connectionConsts';
+import NetPlayer from './netPlayer';
 
-export default class ConnectionManager {
+class ConnectionManager extends Component {
 
-    constructor(){
+    constructor(props){
+        super(props)
+        this.state = {
+            trigger: trigStat.UNTRIGGERED
+        }
         this.timeout = null
         this.netPlayers = []
         this.socket = null
-        this.connectionStatus = env.connectingStatus
+        this.connectionStatus = conStat.CONNECTING
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.trigger !== this.state.trigger && this.state.trigger === trigStat.TRIGGERED) {
+            this.props.setConnectStatus(trigStat.UNTRIGGERED);
+            this.setState({trigger: trigStat.UNTRIGGERED});
+            console.log("connection attempt");
+        }
+    }
+      
+    static getDerivedStateFromProps(nextProps, prevState){
+        if(nextProps.connection === trigStat.TRIGGERED){
+          return {trigger : nextProps.connection};
+        }
+        else return null;
     }
 
     //Handle netPlayers after receiving socket update
@@ -40,7 +63,7 @@ export default class ConnectionManager {
     //Every frame
     update(state,player){
         this.netPlayers.forEach( element => element.render(state))
-        if (this.connectionStatus === env.connectedStatus){
+        if (this.connectionStatus === conStat.CONNECTED){
             this.socket.emit("position", player.position);
         }
     }
@@ -48,32 +71,43 @@ export default class ConnectionManager {
     //Attempt connection
     connect(){
         this.socket.connect()
-        this.connectionStatus = env.connectingStatus;
+        this.connectionStatus = conStat.CONNECTING;
         this.triggerTimeout();
     }
 
     triggerTimeout(){
         this.timeout = setTimeout(() => {
             this.socket.disconnect();
-            this.connectionStatus = env.disconnectedStatus;
+            this.connectionStatus = conStat.DISCONNECTED;
             this.netPlayers = [];
         }, 10000);
     }
 
     //On creation
     initConnection(){
-        this.socket = socketIOClient(env.ServerUrl);
+        this.socket = socketIOClient(servUrl.SERVER_URL_DEV);
         this.triggerTimeout();
         this.socket.on("players", data => {
             this.handleNetPlayers(data);
         })
         this.socket.on("connect",() => {
-            this.connectionStatus = env.connectedStatus;
+            this.connectionStatus = conStat.CONNECTED;
             clearTimeout(this.timeout)
         })
         this.socket.on("disconnect",() => {
-            this.connectionStatus = env.connectingStatus;
+            this.connectionStatus = conStat.CONNECTING;
             this.triggerTimeout();
         })
     }
+
+    //null returning component
+    render(){
+        return null;
+    }
 }
+
+const mapStateToProps = state => ({
+    connection: state.connection
+})
+
+export default connect(mapStateToProps, { setConnectStatus }, null, { forwardRef: true })(ConnectionManager)

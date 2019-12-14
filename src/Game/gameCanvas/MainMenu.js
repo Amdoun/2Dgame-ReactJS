@@ -1,4 +1,4 @@
-import { environment as env } from "../../environments/environment"
+import { connectionStatus as conStat} from './managers/connectionManager/connectionConsts'
 
 export default class MainMenu {
 
@@ -16,7 +16,7 @@ export default class MainMenu {
 
     handleMenuClick(){
         if (this.connectButtonHovered){
-            this.gameCanvas.connectionManager.connect();
+            //this.gameCanvas.connectionManager.connect();
         }
     }
 
@@ -44,7 +44,7 @@ export default class MainMenu {
         context.lineWidth = "3";
         context.strokeStyle = "white";
         context.fillStyle = "white";
-        if (this.gameCanvas.connectionManager.connectionStatus === env.disconnectedStatus){
+        if (this.gameCanvas.connectionManager.connectionStatus === conStat.DISCONNECTED){
             context.rect(340,175,120,50);
             if (this.connectButtonHovered){
                 context.fillStyle = "gray";

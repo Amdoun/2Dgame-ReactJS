@@ -1,6 +1,6 @@
 import React from 'react';
-import GameCanvas from './Game/GameCanvas';
-import Menu from './Game/Menu';
+import GameCanvas from './Game/gameCanvas';
+import Menu from './Game/menu';
 
 function App() {
   return (
