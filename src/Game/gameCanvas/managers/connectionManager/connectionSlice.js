@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { triggerStatus } from './connectionConsts'
+import { connectionStatus } from './connectionConsts'
 
 const connectionSlice = createSlice({
     name: 'connectStatus',
-    initialState: triggerStatus.UNTRIGGERED,
+    initialState: connectionStatus.DISCONNECTED,
     reducers: {
       setConnectStatus(state, action) {
         return action.payload

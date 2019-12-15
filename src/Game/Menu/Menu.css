@@ -8,6 +8,11 @@
     text-align: center;
 }
 
+.menu-connectionstatus {
+    position: absolute;
+    font-size: 20px;
+}
+
 .menu-button {
     padding: 5px;
 }

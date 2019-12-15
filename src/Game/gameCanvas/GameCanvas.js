@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import './gameCanvas.css'
 import Player from './player';
-import MainMenu from './MainMenu';
 import InputManager from './managers/inputManager';
 import MouseManager from './managers/mouseManager';
 import ConnectionManager from './managers/connectionManager';
@@ -26,7 +25,6 @@ class GameCanvas extends Component {
             context: null,
         }
         this.connectionManager = React.createRef();
-        this.mainMenu = null
         this.player = null
     }
 
@@ -48,13 +46,6 @@ class GameCanvas extends Component {
         const keys = this.state.input.pressedKeys
         const mousePos = this.state.mouse.mousePosition
         this.clearBackground();
-        if (this.mainMenu !== undefined && this.mainMenu !== null){
-            this.mainMenu.update(mousePos)
-            this.mainMenu.render(this.state)
-            if (this.connectionManager.current !== undefined && this.connectionManager.current !== null) {
-                this.mainMenu.setDisplayText(this.connectionManager.current.connectionStatus);
-            }
-        }
         if (this.player !== undefined && this.player !== null) {
             this.player.update(keys);
             this.player.render(this.state,this.props.name);
@@ -74,7 +65,6 @@ class GameCanvas extends Component {
     }
 
     startGame() {
-        let mainMenu = new MainMenu(this)
         let player = new Player({
             radius: 15,
             speed: 2.5,
@@ -83,7 +73,6 @@ class GameCanvas extends Component {
                 y: this.state.screen.height - 50
             }});
         this.player = player;
-        this.mainMenu = mainMenu;
         this.connectionManager.current.initConnection();
      }
 

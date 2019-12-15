@@ -2,7 +2,8 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import socketIOClient from "socket.io-client";
 import { setConnectStatus } from './connectionSlice'
-import { connectionStatus as conStat, triggerStatus as trigStat } from "./connectionConsts";
+import { setShowMenu } from '../../../menu/showMenuSlice';
+import { connectionStatus as conStat } from "./connectionConsts";
 import { serverUrl as servUrl } from './connectionConsts';
 import NetPlayer from './netPlayer';
 
@@ -11,29 +12,29 @@ class ConnectionManager extends Component {
     constructor(props){
         super(props)
         this.state = {
-            trigger: trigStat.UNTRIGGERED
+            connectionStatus: this.props.connection
         }
-        this.timeout = null
-        this.netPlayers = []
-        this.socket = null
-        this.connectionStatus = conStat.CONNECTING
+        this.timeout = null;
+        this.netPlayers = [];
+        this.socket = null;
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.trigger !== this.state.trigger && this.state.trigger === trigStat.TRIGGERED) {
-            this.props.setConnectStatus(trigStat.UNTRIGGERED);
-            this.setState({trigger: trigStat.UNTRIGGERED});
-            console.log("connection attempt");
-        }
-    }
-      
     static getDerivedStateFromProps(nextProps, prevState){
-        if(nextProps.connection === trigStat.TRIGGERED){
-          return {trigger : nextProps.connection};
+        if(nextProps.connection !== prevState.connectionStatus){
+          return {connectionStatus : nextProps.connection};
         }
         else return null;
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.connectionStatus !== this.state.connectionStatus 
+            && prevState.connectionStatus === conStat.DISCONNECTED) {
+            this.props.setShowMenu(false);
+            console.log("connection attempt");
+            this.connect();
+        }
+    }
+      
     //Handle netPlayers after receiving socket update
     handleNetPlayers(data){
         let netPlayersData = data.filter( element => element.id !== this.socket.id)
@@ -63,22 +64,21 @@ class ConnectionManager extends Component {
     //Every frame
     update(state,player){
         this.netPlayers.forEach( element => element.render(state))
-        if (this.connectionStatus === conStat.CONNECTED){
+        if (this.state.connectionStatus === conStat.CONNECTED){
             this.socket.emit("position", player.position);
         }
     }
 
     //Attempt connection
     connect(){
-        this.socket.connect()
-        this.connectionStatus = conStat.CONNECTING;
+        this.socket.connect();
         this.triggerTimeout();
     }
 
     triggerTimeout(){
         this.timeout = setTimeout(() => {
             this.socket.disconnect();
-            this.connectionStatus = conStat.DISCONNECTED;
+            this.props.setConnectStatus(conStat.DISCONNECTED);
             this.netPlayers = [];
         }, 10000);
     }
@@ -91,11 +91,11 @@ class ConnectionManager extends Component {
             this.handleNetPlayers(data);
         })
         this.socket.on("connect",() => {
-            this.connectionStatus = conStat.CONNECTED;
+            this.props.setConnectStatus(conStat.CONNECTED);
             clearTimeout(this.timeout)
         })
         this.socket.on("disconnect",() => {
-            this.connectionStatus = conStat.CONNECTING;
+            this.props.setConnectStatus(conStat.CONNECTING);
             this.triggerTimeout();
         })
     }
@@ -110,4 +110,4 @@ const mapStateToProps = state => ({
     connection: state.connection
 })
 
-export default connect(mapStateToProps, { setConnectStatus }, null, { forwardRef: true })(ConnectionManager)
+export default connect(mapStateToProps, { setConnectStatus, setShowMenu }, null, { forwardRef: true })(ConnectionManager)

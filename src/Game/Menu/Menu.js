@@ -2,17 +2,26 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { setDisplayName } from './nameSlice';
 import { setConnectStatus } from '../gameCanvas/managers/connectionManager/connectionSlice';
-import { triggerStatus } from '../gameCanvas/managers/connectionManager/connectionConsts'
+import { connectionStatus } from '../gameCanvas/managers/connectionManager/connectionConsts'
 import './Menu.css';
 
-const Menu = ({ setDisplayName, setConnectStatus }) => {
+const Menu = ({ connection, setDisplayName, setConnectStatus }) => {
     return(
-        <div className="menu-main">
-            Enter display name :
-            <input className="menu-textinput" onChange={(e) => setDisplayName(e.target.value)} type="text"></input>
-            <input className="menu-button" type="button" onClick={() => setConnectStatus(triggerStatus.TRIGGERED)} value="Connect"></input>
+        <div>
+            <span className="menu-connectionstatus">{connection}</span>
+            {connection === connectionStatus.DISCONNECTED &&
+            <div className="menu-main">
+                Enter display name :
+                <input className="menu-textinput" onChange={(e) => setDisplayName(e.target.value)} type="text"></input>
+                <input className="menu-button" type="button" onClick={() => setConnectStatus(connectionStatus.CONNECTING)} value="Connect"></input>
+            </div>}
         </div>
     )
 }
 
-export default connect(null, { setDisplayName, setConnectStatus })(Menu);
+const mapStateToProps = state => ({
+    showMenu: state.showMenu,
+    connection: state.connection
+})
+
+export default connect(mapStateToProps, { setDisplayName, setConnectStatus })(Menu);
