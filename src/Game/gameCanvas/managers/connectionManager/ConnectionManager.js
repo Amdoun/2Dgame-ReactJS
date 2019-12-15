@@ -30,13 +30,13 @@ class ConnectionManager extends Component {
         if (prevState.connectionStatus !== this.state.connectionStatus 
             && prevState.connectionStatus === conStat.DISCONNECTED) {
             this.props.setShowMenu(false);
-            console.log("connection attempt");
             this.connect();
         }
     }
       
     //Handle netPlayers after receiving socket update
     handleNetPlayers(data){
+        console.log(data)
         let netPlayersData = data.filter( element => element.id !== this.socket.id)
         //Check if player disconnected
         if (this.netPlayers.length > netPlayersData.length){
@@ -63,7 +63,7 @@ class ConnectionManager extends Component {
     
     //Every frame
     update(state,player){
-        this.netPlayers.forEach( element => element.render(state))
+        this.netPlayers.forEach(element => element.render(state))
         if (this.state.connectionStatus === conStat.CONNECTED){
             this.socket.emit("position", player.position);
         }
@@ -71,22 +71,31 @@ class ConnectionManager extends Component {
 
     //Attempt connection
     connect(){
-        this.socket.connect();
-        this.triggerTimeout();
+        if (this.socket === null){
+            this.initConnection();
+        } else {
+            clearTimeout(this.timeout);
+            this.triggerTimeout();
+            this.socket.connect();
+        }
+    }
+
+    //Disconnect
+    disconnect(){
+        this.socket.disconnect();
+        this.props.setConnectStatus(conStat.DISCONNECTED);
+        this.netPlayers = [];
     }
 
     triggerTimeout(){
         this.timeout = setTimeout(() => {
-            this.socket.disconnect();
-            this.props.setConnectStatus(conStat.DISCONNECTED);
-            this.netPlayers = [];
+            this.disconnect();
         }, 10000);
     }
 
     //On creation
     initConnection(){
         this.socket = socketIOClient(servUrl.SERVER_URL_DEV);
-        this.triggerTimeout();
         this.socket.on("players", data => {
             this.handleNetPlayers(data);
         })

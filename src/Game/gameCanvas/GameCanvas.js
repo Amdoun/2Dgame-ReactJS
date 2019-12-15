@@ -73,7 +73,6 @@ class GameCanvas extends Component {
                 y: this.state.screen.height - 50
             }});
         this.player = player;
-        this.connectionManager.current.initConnection();
      }
 
     render(){
