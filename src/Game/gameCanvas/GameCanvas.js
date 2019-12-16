@@ -5,6 +5,7 @@ import Player from './player';
 import InputManager from './managers/inputManager';
 import MouseManager from './managers/mouseManager';
 import ConnectionManager from './managers/connectionManager';
+import { connectionStatus as conStat } from './managers/connectionManager/connectionConsts';
 
 const width = 800;
 const height = 400; //const height = window.innerHeight;
@@ -23,9 +24,28 @@ class GameCanvas extends Component {
                 ratio: ratio,
             },
             context: null,
+            connectionStatus: this.props.connection
         }
         this.connectionManager = React.createRef();
         this.player = null
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState){
+        if(nextProps.connection !== prevState.connectionStatus){
+          return {connectionStatus : nextProps.connection};
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.connectionStatus !== this.state.connectionStatus 
+            && this.state.connectionStatus === conStat.CONNECTED) {
+            this.startGame();
+        }
+        if (prevState.connectionStatus !== this.state.connectionStatus 
+            && this.state.connectionStatus === conStat.DISCONNECTED) {
+            this.stopGame();
+        }
     }
 
     componentDidMount() {
@@ -33,8 +53,7 @@ class GameCanvas extends Component {
         this.state.mouse.bindMouse(this.refs.canvas);
         const context = this.refs.canvas.getContext('2d');
         this.setState({ context: context });
-        this.startGame()
-        requestAnimationFrame(() => {this.update()})
+        requestAnimationFrame(() => {this.update()});
     }
        
     componentWillUnmount() {
@@ -49,9 +68,9 @@ class GameCanvas extends Component {
         if (this.player !== undefined && this.player !== null) {
             this.player.update(keys);
             this.player.render(this.state,this.props.name);
-        }
-        if (this.connectionManager.current !== undefined && this.connectionManager.current !== null) {
-            this.connectionManager.current.update(this.state,this.player);
+            if (this.connectionManager.current !== undefined && this.connectionManager.current !== null) {
+                this.connectionManager.current.update(this.state,this.player);
+            }
         }
         requestAnimationFrame(() => {this.update()})
     }
@@ -75,6 +94,10 @@ class GameCanvas extends Component {
         this.player = player;
      }
 
+    stopGame() {
+        this.player = null;
+    }
+
     render(){
         return(
             <div>
@@ -90,7 +113,8 @@ class GameCanvas extends Component {
 }
 
 const mapStateToProps = state => ({
-    name: state.name
+    name: state.name,
+    connection: state.connection
 })
 
 export default connect(mapStateToProps, null)(GameCanvas);

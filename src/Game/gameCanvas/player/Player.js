@@ -40,7 +40,6 @@ export default class Player {
         context.save();
         context.translate(this.position.x, this.position.y);
         context.font = "20px Arial";
-        context.beginPath();
         context.lineWidth = "3";
         context.strokeStyle = "white";
         context.fillStyle = "red";

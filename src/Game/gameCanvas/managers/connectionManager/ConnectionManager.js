@@ -36,7 +36,6 @@ class ConnectionManager extends Component {
       
     //Handle netPlayers after receiving socket update
     handleNetPlayers(data){
-        console.log(data)
         let netPlayersData = data.filter( element => element.id !== this.socket.id)
         //Check if player disconnected
         if (this.netPlayers.length > netPlayersData.length){
@@ -52,11 +51,11 @@ class ConnectionManager extends Component {
             // If player not in this.netPlayers
             if (this.netPlayers.filter( el => el.id === element.id).length === 0){
                 //Add new player
-                let netPlayer = new NetPlayer({id: element.id, position: element.position})
+                let netPlayer = new NetPlayer({id: element.id, name: element.name, position: element.position})
                 this.netPlayers.push(netPlayer)
             } else {
                 //Update existing player position
-                this.netPlayers.filter( el => el.id === element.id)[0].update(element.position)
+                this.netPlayers.filter( el => el.id === element.id)[0].update(element.name, element.position)
             }
         })
     }
@@ -65,7 +64,7 @@ class ConnectionManager extends Component {
     update(state,player){
         this.netPlayers.forEach(element => element.render(state))
         if (this.state.connectionStatus === conStat.CONNECTED){
-            this.socket.emit("position", player.position);
+            this.socket.emit("position", {name: this.props.name, position: player.position});
         }
     }
 
@@ -73,10 +72,11 @@ class ConnectionManager extends Component {
     connect(){
         if (this.socket === null){
             this.initConnection();
+            this.triggerTimeout();
         } else {
             clearTimeout(this.timeout);
-            this.triggerTimeout();
             this.socket.connect();
+            this.triggerTimeout();
         }
     }
 
@@ -116,6 +116,7 @@ class ConnectionManager extends Component {
 }
 
 const mapStateToProps = state => ({
+    name: state.name,
     connection: state.connection
 })
 
