@@ -51,20 +51,25 @@ class ConnectionManager extends Component {
             // If player not in this.netPlayers
             if (this.netPlayers.filter( el => el.id === element.id).length === 0){
                 //Add new player
-                let netPlayer = new NetPlayer({id: element.id, name: element.name, position: element.position})
+                let netPlayer = new NetPlayer({id: element.id, name: element.name, position: element.position, pellets: element.pellets})
                 this.netPlayers.push(netPlayer)
             } else {
                 //Update existing player position
-                this.netPlayers.filter( el => el.id === element.id)[0].update(element.name, element.position)
+                this.netPlayers.filter( el => el.id === element.id)[0].update(element.name, element.position, element.pellets)
             }
         })
     }
     
     //Every frame
-    update(state,player){
+    update(state,player,pellets){
         this.netPlayers.forEach(element => element.render(state))
         if (this.state.connectionStatus === conStat.CONNECTED){
-            this.socket.emit("position", {name: this.props.name, position: player.position});
+            this.socket.emit("position", 
+            {
+            name: this.props.name, 
+            position: player.position,
+            pellets: pellets
+        });
         }
     }
 

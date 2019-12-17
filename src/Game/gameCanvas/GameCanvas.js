@@ -28,6 +28,8 @@ class GameCanvas extends Component {
         }
         this.connectionManager = React.createRef();
         this.player = null
+        //Game objects
+        this.pellets = []
     }
 
     static getDerivedStateFromProps(nextProps, prevState){
@@ -69,10 +71,28 @@ class GameCanvas extends Component {
             this.player.update(keys);
             this.player.render(this.state,this.props.name);
             if (this.connectionManager.current !== undefined && this.connectionManager.current !== null) {
-                this.connectionManager.current.update(this.state,this.player);
+                this.connectionManager.current.update(this.state,this.player,this.pellets);
             }
         }
+        this.updateObjects(this.pellets,'pellets');
         requestAnimationFrame(() => {this.update()})
+    }
+
+    createObject(object, group){
+        this[group].push(object);
+    }
+
+    updateObjects(objects, group){
+        let index = 0;
+        for (let object of objects){
+            if (object.delete){
+                this[group].splice(index, 1);
+            } else {
+                objects[index].update();
+                objects[index].render(this.state);
+            }
+            index++;
+        }
     }
 
     clearBackground() {
@@ -90,7 +110,9 @@ class GameCanvas extends Component {
             position: {
                 x: this.state.screen.width/2,
                 y: this.state.screen.height - 50
-            }});
+            },
+            create: this.createObject.bind(this)
+        });
         this.player = player;
      }
 

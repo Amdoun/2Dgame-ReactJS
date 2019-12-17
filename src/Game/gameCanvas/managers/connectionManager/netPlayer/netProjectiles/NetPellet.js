@@ -14,7 +14,7 @@ export default class Pellet {
 
     update(){
         this.position.x += 4;
-        if (this.position.x > 800)
+        if (this.position.x > 700)
             this.destroy();
     }
 

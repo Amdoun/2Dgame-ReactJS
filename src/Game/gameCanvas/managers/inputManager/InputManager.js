@@ -3,6 +3,7 @@ const KEY = {
     RIGHT: 39,
     A: 65,
     D: 68,
+    X: 88,
     SPACE: 32,
     ENTER: 13
  };
@@ -10,7 +11,7 @@ const KEY = {
 export default class InputManager{
 
     constructor() {
-        this.pressedKeys = { left: 0, right: 0, space: 0, enter: 0 };
+        this.pressedKeys = { left: 0, right: 0, space: 0, enter: 0, shoot: 0 };
     }
 
     bindKeys(){
@@ -39,6 +40,9 @@ export default class InputManager{
                 break;
             case KEY.ENTER:
                 keys.enter = value;
+                break;
+            case KEY.X:
+                keys.shoot = value;
                 break;
             default:
             }

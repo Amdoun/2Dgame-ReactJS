@@ -1,4 +1,5 @@
 import image from './assets/idle.png'
+import Pellet from './projectiles/Pellet';
 
 export default class Player {
 
@@ -8,9 +9,10 @@ export default class Player {
         this.speed = args.speed;
         this.radius = args.radius;
         this.gravity = 0.5;
-        this.jumpspeed = 20;
+        this.jumpspeed = 13;
         this.verticalspeed = 0;
-        this.previousState = { left: 0, right: 0, space: 0, enter: 0 };
+        this.previousState = { left: 0, right: 0, space: 0, enter: 0, shoot: 0 };
+        this.create = args.create;
         this.init();
     }
 
@@ -30,6 +32,12 @@ export default class Player {
         if (keys.space && !this.previousState.space){
             this.verticalspeed = 0;
             this.verticalspeed -= this.jumpspeed
+        }
+        if (keys.shoot && !this.previousState.shoot){
+            let pellet = new Pellet({
+                position: JSON.parse(JSON.stringify(this.position))
+            })
+            this.create(pellet,'pellets');
         }
         if ( this.position.y > 400) this.position.y = 400;
         this.previousState = {...keys};
