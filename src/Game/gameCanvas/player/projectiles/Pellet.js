@@ -5,6 +5,7 @@ export default class Pellet {
     constructor(args){
         this.sprite = new Image();
         this.position = args.position;
+        this.direction = args.direction;
         this.init();
     }
 
@@ -13,7 +14,7 @@ export default class Pellet {
     }
 
     update(){
-        this.position.x += 4;
+        this.position.x += this.direction * 6;
         if (this.position.x > 800)
             this.destroy();
     }

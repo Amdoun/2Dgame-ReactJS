@@ -5,6 +5,7 @@ export default class Player {
 
     constructor(args){
         this.sprite = new Image();
+        this.direction = 1;
         this.position = args.position;
         this.speed = args.speed;
         this.radius = args.radius;
@@ -23,9 +24,11 @@ export default class Player {
     update(keys){
         if (keys.right && this.position.x <= 800){
             this.position.x += this.speed
+            this.direction = 1
         } else
         if (keys.left && this.position.x >= 0){
             this.position.x -= this.speed
+            this.direction = -1
         }
         if ( this.verticalspeed < 20) this.verticalspeed+= this.gravity;
         this.position.y += this.verticalspeed;
@@ -35,6 +38,7 @@ export default class Player {
         }
         if (keys.shoot && !this.previousState.shoot){
             let pellet = new Pellet({
+                direction: this.direction,
                 position: JSON.parse(JSON.stringify(this.position))
             })
             this.create(pellet,'pellets');
@@ -55,7 +59,8 @@ export default class Player {
         context.strokeStyle = '#ffffff';
         context.fillStyle = '#ffffff';
         context.lineWidth = 2;
-        context.drawImage(this.sprite,0,-43);
+        context.scale(this.direction, 1);
+        context.drawImage(this.sprite,-10,-43,);
         context.fill();
         context.stroke();
         context.restore();
