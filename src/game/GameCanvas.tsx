@@ -6,6 +6,7 @@ import { Player } from 'gameobjects';
 import GameObject from 'gameobjects';
 import { RootState } from 'reducers';
 import { InputActions } from 'managers/InputManager/InputManager';
+import { room1map } from 'game/rooms'
 
 interface ScreenInterface {
     width: number,
@@ -95,14 +96,13 @@ class GameCanvas extends Component<any,GameCanvasState> {
     }
 
     startGame() {
-        let player = new Player({
-            position: {
-                posX: this.state.screen.width/2,
-                posY: this.state.screen.height/2
-            },
-            create: this.createObject.bind(this)
-        });
-        this.gameobjects.push(player);
+        room1map(this.state,this.createObject.bind(this))
+        .then((result) => {
+            this.gameobjects = result
+        }).catch((error) => {
+            console.log(error.response)
+            this.startGame();
+        })
      }
 
     stopGame() {

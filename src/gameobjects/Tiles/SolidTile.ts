@@ -2,12 +2,12 @@ import { CollidableComponent, CollisionBoxComponent } from "gamecomponents";
 import GameObject from "gameobjects/GameObject";
 import { GamePosition } from "types";
 import { CollidableSurfaceAttributes } from "gamecomponents/CollidableComponent/CollidableComponent";
+import { GameCanvasState } from "game/GameCanvas";
 
 interface SolidTileProps {
     position: GamePosition,
     width: number,
     height: number,
-    collidableComponent: CollidableComponent
 }
 
 class SolidTile extends GameObject {
@@ -39,6 +39,15 @@ class SolidTile extends GameObject {
                 return false;
             }
         });
+    }
+
+    render = (state: GameCanvasState) => {
+        const context = state.context;
+        context.save();
+        context.beginPath();
+        context.fillStyle = '#ffffff';
+        context.rect(this.position.posX, this.position.posY, this.width, this.height);
+        context.stroke();
     }
 
 }

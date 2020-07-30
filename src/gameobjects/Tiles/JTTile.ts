@@ -7,7 +7,6 @@ interface JTTileProps {
     position: GamePosition,
     width: number,
     height: number,
-    collidableComponent: CollidableComponent
 }
 
 class JTTile extends GameObject {
