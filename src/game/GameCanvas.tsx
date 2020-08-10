@@ -2,7 +2,6 @@ import React, { Component, ReactElement } from 'react';
 import { connect } from 'react-redux';
 import { InputManager, MouseManager} from 'managers'
 import { ConnectionStatus } from 'types';
-import { Player } from 'gameobjects';
 import GameObject from 'gameobjects';
 import { RootState } from 'reducers';
 import { InputActions } from 'managers/InputManager/InputManager';
@@ -28,6 +27,7 @@ const ratio = 1;
 class GameCanvas extends Component<any,GameCanvasState> {
 
     gameobjects: GameObject[];
+    tiles: (GameObject | null)[];
     canvasRef = React.createRef<HTMLCanvasElement>();
 
     constructor(props: any){
@@ -43,6 +43,7 @@ class GameCanvas extends Component<any,GameCanvasState> {
             context: null,
         }
         this.gameobjects = [];
+        this.tiles = [];
     }
 
     componentDidMount() {
@@ -80,11 +81,11 @@ class GameCanvas extends Component<any,GameCanvasState> {
             if (object.delete){
                 this.gameobjects.splice(index, 1);
             } else {
-                this.gameobjects[index].update(keys);
-                this.gameobjects[index].render(this.state);
+                this.gameobjects[index].update(this.state);
             }
             index++;
         }
+        index = 0;
     }
 
     clearBackground() {
@@ -98,12 +99,22 @@ class GameCanvas extends Component<any,GameCanvasState> {
     startGame() {
         room1map(this.state,this.createObject.bind(this))
         .then((result) => {
-            this.gameobjects = result
+            this.gameobjects = result.gameobjects;
+            this.tiles = result.tiles;
+            this.injectMapContext();
         }).catch((error) => {
             console.log(error.response)
             this.startGame();
         })
-     }
+    }
+
+    injectMapContext() {
+        this.gameobjects.forEach((gameobject) => {
+            if (gameobject.boxCollisionComponent){
+                gameobject.boxCollisionComponent.tiles = this.tiles;
+            }
+        })
+    }
 
     stopGame() {
         this.gameobjects = [];
@@ -113,9 +124,9 @@ class GameCanvas extends Component<any,GameCanvasState> {
         return(
             <div>
                 <canvas ref={this.canvasRef} className="canvas-main"
-                    width={ this.state.screen.width * this.state.screen.ratio }
-                    height={ this.state.screen.height * this.state.screen.ratio }
-                    >
+                width={ this.state.screen.width * this.state.screen.ratio }
+                height={ this.state.screen.height * this.state.screen.ratio }
+                >
                 </canvas>
             </div>
         )

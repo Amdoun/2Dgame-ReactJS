@@ -1,18 +1,20 @@
-import SolidTile from "../SolidTile";
+import GameObject from "gameobjects";
+import TileCollisionComponent from "gamecomponents/TileCollisionComponent";
+import GraphicsComponent from "gamecomponents/GraphicsComponent";
 
-interface SolidGroupProps {
+interface TileGroupProps {
     tilesize: number,
     roombitmap: HTMLImageElement
 }
 
-class SolidGroup {
+class TileGroup {
 
     tilesize: number;
     roombitmap: HTMLImageElement;
     roomcanvas: HTMLCanvasElement;
-    tiles: SolidTile[] = [];
+    tiles: (GameObject | null)[] = [];
 
-    constructor(props: SolidGroupProps){
+    constructor(props: TileGroupProps){
         this.tilesize = props.tilesize;
         this.roombitmap = props.roombitmap;
         this.roomcanvas = document.createElement("canvas");
@@ -29,15 +31,17 @@ class SolidGroup {
             if (data){
                 for (var i = 0; i < data.length; i+=4){
                     if (data[i] == 0){
-                        var solidtile: SolidTile = new SolidTile({
+                        var tile: GameObject = new GameObject({
                             position:{
                                 posX: (i/4 % this.roombitmap.width ) * this.tilesize,
                                 posY: Math.floor(i/4 / this.roombitmap.width) * this.tilesize
                             },
-                            width: this.tilesize,
-                            height: this.tilesize
+                            graphicsComponent: new GraphicsComponent(),
+                            tileCollisionComponent: new TileCollisionComponent({width: 16, height: 16})
                         });
-                        this.tiles.push(solidtile);
+                        this.tiles.push(tile);
+                    } else {
+                        this.tiles.push(null);
                     }
                 }
             }
@@ -46,4 +50,4 @@ class SolidGroup {
 
 }
 
-export default SolidGroup;
+export default TileGroup;
