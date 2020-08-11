@@ -1,4 +1,5 @@
 import GameObject from "gameobjects";
+import { GamePosition } from "types";
 
 interface BoxCollisionComponentProps {
     width: number;
@@ -11,6 +12,7 @@ class BoxCollisionComponent {
     height: number;
     collidedhor: boolean = false;
     collidedver: boolean = false;
+    impactoffset: GamePosition = {posX: 0, posY: 0};
     tiles: (GameObject | null)[] = [];
 
     constructor(props: BoxCollisionComponentProps){
@@ -35,10 +37,12 @@ class BoxCollisionComponent {
                         pos.posY < tilepos.posY + tile.tileCollisionComponent.height){
                         if (pos.posX + this.width + obj.physicsComponent.velocity.hsp >= tilepos.posX &&
                             pos.posX < tilepos.posX + tile.tileCollisionComponent.width){
+                                this.impactoffset.posX = tilepos.posX - pos.posX - this.width - 1;
                                 this.collidedhor = true;
                         }
                         if (pos.posX + obj.physicsComponent.velocity.hsp <= tilepos.posX + tile.tileCollisionComponent.width &&
                             pos.posX > tilepos.posX + tile.tileCollisionComponent.width){
+                                this.impactoffset.posX = tilepos.posX + tile.tileCollisionComponent.width - pos.posX + 1;
                                 this.collidedhor = true;
                         }
                     }
@@ -49,11 +53,13 @@ class BoxCollisionComponent {
                         pos.posX < tilepos.posX + tile.tileCollisionComponent.width){
                         if (pos.posY + this.height + obj.physicsComponent.velocity.vsp  >= tilepos.posY &&
                             pos.posY < tilepos.posY + tile.tileCollisionComponent.height){
-                            this.collidedver = true;
+                                this.impactoffset.posY = tilepos.posY - pos.posY - this.height - 1;
+                                this.collidedver = true;
                         }
                         if (pos.posY + obj.physicsComponent.velocity.vsp <= tilepos.posY + tile.tileCollisionComponent.height &&
                             pos.posY > tilepos.posY + tile.tileCollisionComponent.height){
-                            this.collidedver = true;
+                                this.impactoffset.posY = tilepos.posY + tile.tileCollisionComponent.height - pos.posY + 1;
+                                this.collidedver = true;
                         }
                     }
                 }
