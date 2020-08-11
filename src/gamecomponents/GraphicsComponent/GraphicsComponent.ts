@@ -22,7 +22,7 @@ class GraphicsComponent {
         */
        
         context.strokeStyle = '#ffffff';
-        context.rect(obj.position?.posX, obj.position?.posY, 16, 16);
+        context.rect(obj.positionComponent?.position.posX, obj.positionComponent?.position.posY, 16, 16);
         context.stroke();
         context.restore();
     }

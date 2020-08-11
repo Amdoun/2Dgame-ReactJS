@@ -65,7 +65,7 @@ class GameCanvas extends Component<any,GameCanvasState> {
     update(){
         const keys = this.state.input.pressedKeys
         const mousePos = this.state.mouse.mousePosition
-        this.clearBackground();
+        //this.clearBackground();
         this.updateObjects(keys);
         requestAnimationFrame(() => {this.update()})
     }

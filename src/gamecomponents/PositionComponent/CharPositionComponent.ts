@@ -9,7 +9,9 @@ class CharPositionComponent extends PositionComponent {
     }
 
     update = (obj: GameObject) => {
-        if (obj.physicsComponent){
+        if (obj.boxCollisionComponent && obj.physicsComponent){
+            if (obj.boxCollisionComponent.collidedhor) obj.physicsComponent.velocity.hsp = 0;
+            if (obj.boxCollisionComponent.collidedver) obj.physicsComponent.velocity.vsp = 0;
             this.position = {
                 posX: this.position.posX + obj.physicsComponent.velocity.hsp,
                 posY: this.position.posY + obj.physicsComponent.velocity.vsp

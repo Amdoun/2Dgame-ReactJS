@@ -1,6 +1,7 @@
 import GameObject from "gameobjects";
 import TileCollisionComponent from "gamecomponents/TileCollisionComponent";
 import GraphicsComponent from "gamecomponents/GraphicsComponent";
+import { PositionComponent } from "gamecomponents/PositionComponent";
 
 interface TileGroupProps {
     tilesize: number,
@@ -32,10 +33,12 @@ class TileGroup {
                 for (var i = 0; i < data.length; i+=4){
                     if (data[i] == 0){
                         var tile: GameObject = new GameObject({
-                            position:{
-                                posX: (i/4 % this.roombitmap.width ) * this.tilesize,
-                                posY: Math.floor(i/4 / this.roombitmap.width) * this.tilesize
-                            },
+                            positionComponent: new PositionComponent(
+                                {
+                                    posX: (i/4 % this.roombitmap.width ) * this.tilesize,
+                                    posY: Math.floor(i/4 / this.roombitmap.width) * this.tilesize
+                                }
+                            ),
                             graphicsComponent: new GraphicsComponent(),
                             tileCollisionComponent: new TileCollisionComponent({width: 16, height: 16})
                         });

@@ -19,38 +19,40 @@ class BoxCollisionComponent {
     }
 
     collideWorld = (obj: GameObject) => {
-        if (obj.position && obj.physicsComponent){
+        if (obj.positionComponent && obj.physicsComponent){
+            var pos = obj.positionComponent.position
             this.collidedhor = false;
             this.collidedver = false;
-            for (var i = Math.floor((obj.position.posX + obj.physicsComponent.velocity.hsp) / 16) - 1;
-             i < Math.ceil((obj.position.posX + this.width + obj.physicsComponent.velocity.hsp) / 16) + 1; i++){
-                for (var j = Math.floor((obj.position.posY + obj.physicsComponent.velocity.vsp) / 16) - 1;
-                 j < Math.ceil((obj.position.posY + this.height + obj.physicsComponent.velocity.vsp) / 16) + 1; j++){
+            for (var i = Math.floor((pos.posX + obj.physicsComponent.velocity.hsp) / 16) - 1;
+             i < Math.ceil((pos.posX + this.width + obj.physicsComponent.velocity.hsp) / 16) + 1; i++){
+                for (var j = Math.floor((pos.posY + obj.physicsComponent.velocity.vsp) / 16) - 1;
+                 j < Math.ceil((pos.posY + this.height + obj.physicsComponent.velocity.vsp) / 16) + 1; j++){
                     var tile = this.tiles[50*(j - 1) + i];
+                    var tilepos = tile?.positionComponent?.position;
                     //Check horizontal collision
-                    if (tile instanceof GameObject && tile.position && tile.tileCollisionComponent &&
-                        obj.position.posY + this.height > tile.position.posY &&
-                        obj.position.posY < tile.position.posY + tile.tileCollisionComponent.height){
-                        if (obj.position.posX + this.width + obj.physicsComponent.velocity.hsp >= tile.position.posX &&
-                            obj.position.posX < tile.position.posX + tile.tileCollisionComponent.width){
+                    if (tile instanceof GameObject && tilepos && tile.tileCollisionComponent &&
+                        pos.posY + this.height > tilepos.posY &&
+                        pos.posY < tilepos.posY + tile.tileCollisionComponent.height){
+                        if (pos.posX + this.width + obj.physicsComponent.velocity.hsp >= tilepos.posX &&
+                            pos.posX < tilepos.posX + tile.tileCollisionComponent.width){
                                 this.collidedhor = true;
                         }
-                        if (obj.position.posX + obj.physicsComponent.velocity.hsp <= tile.position.posX + tile.tileCollisionComponent.width &&
-                            obj.position.posX > tile.position.posX + tile.tileCollisionComponent.width){
+                        if (pos.posX + obj.physicsComponent.velocity.hsp <= tilepos.posX + tile.tileCollisionComponent.width &&
+                            pos.posX > tilepos.posX + tile.tileCollisionComponent.width){
                                 this.collidedhor = true;
                         }
                     }
 
                     //Check vertical collision
-                    if (tile instanceof GameObject && tile.position && tile.tileCollisionComponent &&
-                        obj.position.posX + this.width > tile.position.posX &&
-                        obj.position.posX < tile.position.posX + tile.tileCollisionComponent.width){
-                        if (obj.position.posY + this.height + obj.physicsComponent.velocity.vsp  >= tile.position.posY &&
-                            obj.position.posY < tile.position.posY + tile.tileCollisionComponent.height){
+                    if (tile instanceof GameObject && tilepos && tile.tileCollisionComponent &&
+                        pos.posX + this.width > tilepos.posX &&
+                        pos.posX < tilepos.posX + tile.tileCollisionComponent.width){
+                        if (pos.posY + this.height + obj.physicsComponent.velocity.vsp  >= tilepos.posY &&
+                            pos.posY < tilepos.posY + tile.tileCollisionComponent.height){
                             this.collidedver = true;
                         }
-                        if (obj.position.posY + obj.physicsComponent.velocity.vsp <= tile.position.posY + tile.tileCollisionComponent.height &&
-                            obj.position.posY > tile.position.posY + tile.tileCollisionComponent.height){
+                        if (pos.posY + obj.physicsComponent.velocity.vsp <= tilepos.posY + tile.tileCollisionComponent.height &&
+                            pos.posY > tilepos.posY + tile.tileCollisionComponent.height){
                             this.collidedver = true;
                         }
                     }
@@ -66,14 +68,14 @@ class BoxCollisionComponent {
             for (var j = Math.floor(position.posY / 16) - 1; j < Math.ceil((position.posY + height) / 16) + 1; j++){
                 var solidtile = this.solidtiles[50*(j - 1) + i];
                 if (solidtile instanceof SolidTile && 
-                    position.posY + height > solidtile.position.posY &&
-                    position.posY < solidtile.position.posY + solidtile.height){
-                    if (position.posX + width + hspeed >= solidtile.position.posX &&
-                        position.posX < solidtile.position.posX + solidtile.width){
+                    position.posY + height > solidtilepos.posY &&
+                    position.posY < solidtilepos.posY + solidtile.height){
+                    if (position.posX + width + hspeed >= solidtilepos.posX &&
+                        position.posX < solidtilepos.posX + solidtile.width){
                         return false;
                     }
-                    if (position.posX + hspeed <= solidtile.position.posX + solidtile.width &&
-                        position.posX > solidtile.position.posX + solidtile.width){
+                    if (position.posX + hspeed <= solidtilepos.posX + solidtile.width &&
+                        position.posX > solidtilepos.posX + solidtile.width){
                         return false;
                     }
                 }
@@ -89,14 +91,14 @@ class BoxCollisionComponent {
             for (var j = Math.floor(position.posY / 16) - 1; j < Math.ceil((position.posY + height) / 16) + 1; j++){
                 var solidtile = this.solidtiles[50*(j - 1) + i];
                 if (solidtile instanceof SolidTile && 
-                    position.posX + width > solidtile.position.posX &&
-                    position.posX < solidtile.position.posX + solidtile.width){
-                    if (position.posY + height + vspeed >= solidtile.position.posY &&
-                        position.posY < solidtile.position.posY + solidtile.height){
+                    position.posX + width > solidtilepos.posX &&
+                    position.posX < solidtilepos.posX + solidtile.width){
+                    if (position.posY + height + vspeed >= solidtilepos.posY &&
+                        position.posY < solidtilepos.posY + solidtile.height){
                         return false;
                     }
-                    if (position.posY + height < solidtile.position.posY &&
-                        position.posY >= solidtile.position.posY + solidtile.height){
+                    if (position.posY + height < solidtilepos.posY &&
+                        position.posY >= solidtilepos.posY + solidtile.height){
                         return false;
                     }
                 }

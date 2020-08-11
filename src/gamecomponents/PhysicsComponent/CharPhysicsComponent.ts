@@ -55,18 +55,6 @@ class CharPhysicsComponent extends PhysicsComponent {
         if (this.velocity.vsp < this.maxfallspeed) { this.velocity.vsp += this.gravity;
         } else { this.velocity.vsp = this.maxfallspeed; }
 
-        if (obj.boxCollisionComponent){
-            obj.boxCollisionComponent.update(obj);
-            if (obj.boxCollisionComponent.collidedhor) this.velocity.hsp = 0;
-            if (obj.boxCollisionComponent.collidedver) this.velocity.vsp = 0;
-        }
-
-        if (obj.position !== undefined){
-            obj.position = {
-                posX: obj.position.posX + this.velocity.hsp,
-                posY: obj.position.posY + this.velocity.vsp
-            }
-        }
     }
 }
 
