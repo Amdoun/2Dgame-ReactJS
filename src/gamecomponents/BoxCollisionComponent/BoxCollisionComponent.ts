@@ -31,37 +31,43 @@ class BoxCollisionComponent {
                  j < Math.ceil((pos.posY + this.height + obj.physicsComponent.velocity.vsp) / 16) + 1; j++){
                     var tile = this.tiles[50*(j - 1) + i];
                     var tilepos = tile?.positionComponent?.position;
-                    //Check horizontal collision
-                    if (tile instanceof GameObject && tilepos && tile.tileCollisionComponent &&
-                        pos.posY + this.height > tilepos.posY &&
-                        pos.posY < tilepos.posY + tile.tileCollisionComponent.height){
-                        if (pos.posX + this.width + obj.physicsComponent.velocity.hsp >= tilepos.posX &&
-                            pos.posX < tilepos.posX + tile.tileCollisionComponent.width){
-                                this.impactoffset.posX = tilepos.posX - pos.posX - this.width - 1;
-                                this.collidedhor = true;
-                        }
-                        if (pos.posX + obj.physicsComponent.velocity.hsp <= tilepos.posX + tile.tileCollisionComponent.width &&
-                            pos.posX > tilepos.posX + tile.tileCollisionComponent.width){
-                                this.impactoffset.posX = tilepos.posX + tile.tileCollisionComponent.width - pos.posX + 1;
-                                this.collidedhor = true;
-                        }
-                    }
-
+                    
                     //Check vertical collision
-                    if (tile instanceof GameObject && tilepos && tile.tileCollisionComponent &&
-                        pos.posX + this.width > tilepos.posX &&
-                        pos.posX < tilepos.posX + tile.tileCollisionComponent.width){
+                    if (!this.collidedver && tile instanceof GameObject && tilepos && tile.tileCollisionComponent &&
+                        pos.posX + this.width >= tilepos.posX &&
+                        pos.posX <= tilepos.posX + tile.tileCollisionComponent.width){
                         if (pos.posY + this.height + obj.physicsComponent.velocity.vsp  >= tilepos.posY &&
                             pos.posY < tilepos.posY + tile.tileCollisionComponent.height){
                                 this.impactoffset.posY = tilepos.posY - pos.posY - this.height - 1;
                                 this.collidedver = true;
+                                
                         }
                         if (pos.posY + obj.physicsComponent.velocity.vsp <= tilepos.posY + tile.tileCollisionComponent.height &&
                             pos.posY > tilepos.posY + tile.tileCollisionComponent.height){
                                 this.impactoffset.posY = tilepos.posY + tile.tileCollisionComponent.height - pos.posY + 1;
                                 this.collidedver = true;
+                                
                         }
                     }
+                    
+                    //Check horizontal collision
+                    if (tile instanceof GameObject && tilepos && tile.tileCollisionComponent &&
+                        pos.posY + this.height + (!this.collidedver ? obj.physicsComponent.velocity.vsp : 0) >= tilepos.posY &&
+                        pos.posY + (!this.collidedver ? obj.physicsComponent.velocity.vsp : 0) <= tilepos.posY + tile.tileCollisionComponent.height){
+                        if (pos.posX + this.width + obj.physicsComponent.velocity.hsp >= tilepos.posX &&
+                            pos.posX < tilepos.posX + tile.tileCollisionComponent.width){
+                                this.impactoffset.posX = tilepos.posX - pos.posX - this.width - 1;
+                                this.collidedhor = true;
+                                break;
+                        }
+                        if (pos.posX + obj.physicsComponent.velocity.hsp <= tilepos.posX + tile.tileCollisionComponent.width &&
+                            pos.posX > tilepos.posX + tile.tileCollisionComponent.width){
+                                this.impactoffset.posX = tilepos.posX + tile.tileCollisionComponent.width - pos.posX + 1;
+                                this.collidedhor = true;
+                                break;
+                        }
+                    }
+
                 }
             }
 
