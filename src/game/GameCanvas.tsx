@@ -102,8 +102,7 @@ class GameCanvas extends Component<any,GameCanvasState> {
             this.gameobjects = result.gameobjects;
             this.tiles = result.tiles;
             this.injectMapContext();
-        }).catch((error) => {
-            console.log(error.response)
+        }).catch(() => {
             this.startGame();
         })
     }
